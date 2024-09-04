@@ -1,0 +1,83 @@
+/* Globales Styling */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+#root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.App {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.feed {
+    flex: 1; /* Nimmt den verfügbaren Platz oberhalb der Input-Leiste ein */
+    overflow-y: auto; /* Ermöglicht Scrollen, wenn die Posts mehr Platz beanspruchen */
+    display: flex;
+    flex-direction: column;
+}
+
+.post {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Styling für das Input-Formular */
+.inputForm {
+    width: 99%;
+    /* position: fixed;
+     bottom: 0;
+    left: 0; */
+    background-color: #87ab69;
+    /* border-top: 1px solid #ccc; */
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-sizing: border-box;
+    z-index: 1;
+}
+
+.inputForm .titleInput {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.inputForm .contentInput {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 16px;
+    resize: none;
+    box-sizing: border-box;
+}
+
+.inputForm button {
+    align-self: flex-end; /* Button rechts ausrichten */
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    width: 100px;
+    margin-bottom: 10px;
+}
+.postContainer{
+    display:flex;
+    flex-direction: column-reverse;
+    overflow: auto;
+}
