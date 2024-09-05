@@ -1,6 +1,8 @@
 import {Button, Box } from "@mui/material";
 import Headline from "../parts/headerLogin/Headline";
 import TextFieldLogin from "../parts/textFieldsLogin/TextFieldLogin";
+import SubmitButton from "../parts/buttonsLogin/SubmitButton";
+import SmallHelperText from "../parts/textLogin/SmallHelperText";
 
 export default function Login(){
     return(
@@ -55,10 +57,9 @@ export default function Login(){
             }}>
 
               {/*Submitbutton*/}
-              <Button variant="contained">Click me</Button> 
-
+              <SubmitButton text={"login"}></SubmitButton>
               {/*SmallHelperText*/} 
-              <p>Testettsstst</p>
+              <SmallHelperText text={"Continue to feed"}></SmallHelperText>
               <Box sx={{
                 width:"80vw",
                 display:"flex",
@@ -67,10 +68,6 @@ export default function Login(){
                 alignItems:"center",
                 backgroundColor:"red"
               }}>
-                {/*AppleButton*/}
-              <Button variant="contained">Click me</Button> 
-                {/*GoogleButton*/}
-              <Button variant="contained">Click me</Button> 
               </Box>
             </Box>
 
