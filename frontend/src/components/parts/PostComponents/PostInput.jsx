@@ -6,10 +6,13 @@ export default function PostInput({ onPost }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (content.trim()) {
-            onPost(title,content);
-            setContent(''); // Textfeld leeren nach dem Posten
+        if (title.trim() === '' || content.trim() === '') {
+            console.error('Title and content cannot be empty');
+            return;
         }
+        onPost(title,content);
+        setContent(''); // Textfeld leeren nach dem Posten
+        setTitle(''); // Titlefeld leeren nach dem Posten
     };
 
     return (
@@ -21,12 +24,14 @@ export default function PostInput({ onPost }) {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder='Überschrift'
                 className='titleInput'
+                required
             />
             <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Was möchtest du teilen?"
                 className='contentInput'
+                required
             />
             <button type="submit">Posten</button>
         </form>
