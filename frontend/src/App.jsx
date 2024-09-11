@@ -20,7 +20,7 @@ function App() {
           <Register></Register>
 
           {/* <Login></Login> */}
-          <Feed></Feed>
+           {/*<Feed></Feed>*/}
 
         </CssBaseline>
       </ThemeProvider>

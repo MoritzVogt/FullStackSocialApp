@@ -11,39 +11,10 @@ const PORT = process.env.PORT;
 app.use(express.json());
 app.use(cors());
 
-const userSchema = new mongoose.Schema({
-    fullname:{
-        type: String,
-        required: true,
-        minlength: 3,
-        maxlength: 50,
-    },
-    email:{
-        type: String,
-        required: true,
-        minlength: 8,
-        maxlength: 50,
-    },
-    hashPassword:{
-        type: String,
-        required: true,
-        minlength: 5,
-        maxlength: 50,
-    },
-    id:{
-        type: String,
-        required: true,
-    },
-    role:{
-        type: String,
-        required: true,
-        enum: ["visitor","organisation","admin"],
-    },
-
-});
-
-const User = mongoose.model("User", userSchema);
-
+const limiter = rateLimit({
+    windowMs: 15* 60* 1000,
+    limit: 15
+})
 
 app.use(async function(req,res, next){
     await mongoose.connect(process.env.CONNECT_STRING);
@@ -63,10 +34,6 @@ app.get("/users",async(req,res)=>{
     });
 })
 
-
-app.post("/api/register",async(req,res) =>{
-
-})
 
 app.listen(PORT,()=>{
     console.log(`Running on Port ${PORT}`)

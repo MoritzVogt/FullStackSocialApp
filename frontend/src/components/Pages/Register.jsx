@@ -3,6 +3,10 @@ import { useState,useRef } from 'react';
 import { TextField } from '@mui/material';
 import { Button } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import axios from "axios";
+import {v4 as uuidv4} from "uuid";
+
+
 export default function Register() {
     const [equal,setEqual] = useState(false);
     const formRef = useRef();
@@ -11,6 +15,39 @@ export default function Register() {
         const form = formRef.current;
         form.password.value === form.confirmPassword.value ? setEqual(true) : setEqual(false);
     }
+    const registerUser = async(e) =>{
+        e.preventDefault();
+        const form = formRef.current;
+        const formData =  {
+            id:uuidv4(),
+            fullname: form.fullname.value,
+            email: form.email.value,
+            password: form.password.value,
+            role: 'visitor'
+        }
+        try {
+            // API-Request zum Speichern des Posts in der MongoDB
+            const response = await fetch('http://localhost:3001/api/user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                const savedUser = await response.json();
+                console.log('Saved user:', savedUser); // Überprüfe, ob die _id zurückkommt // Fügt den neuen Post hinzu
+            } else {
+                console.error('Failed to save the post');
+            }
+        } catch (error) {
+            console.error('Error while saving the post:', error);
+        }
+        
+    }
+
+
     return (
         <>
             <Box sx={{
@@ -38,7 +75,8 @@ export default function Register() {
                 {/* //Here comes the box component for the form */}
                 <Box
                 component='form'     
-                ref={formRef}    
+                ref={formRef}  
+                on onSubmit={(e) => {registerUser(e)}}
                 sx={{
                     height: '100%',
                     width: '100%',
