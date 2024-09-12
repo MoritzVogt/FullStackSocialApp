@@ -1,20 +1,34 @@
 require('dotenv').config();  // Stellt sicher, dass die Umgebungsvariablen geladen werden
-const { default: mongoose } = require("mongoose");
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
 const app = express();
 
+const corsOptions = {
+    origin: ['http://localhost:3002', 'http://127.0.0.1:3002'],
+    methods: ['GET', 'POST', 'OPTIONS'], // Erlaube auch OPTIONS für Preflight
+    credentials: true
+};
+
 // Middleware
-app.use(cors({
-    origin: 'http://localhost:3002', // Port, auf dem das Frontend läuft
-    methods: ['GET', 'POST'],
-    credentials: true,
-}));
+app.use(cors(corsOptions));
+
+// Zusätzliche Middleware für Preflight-Anfragen
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", req.headers.origin);
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    if (req.method === "OPTIONS") {
+        return res.status(200).end();
+    }
+    next();
+});
+
+
 app.use(express.json());  // Um JSON-Body von Requests zu parsen
 
 // MongoDB Verbindung
-const uri = "mongodb+srv://admin:admin@socialappdb.t36fh.mongodb.net/?retryWrites=true&w=majority&appName=SocialAppDB";  // Verbindungs-String aus der .env-Datei
+const uri = "mongodb+srv://admin:admin@socialappdb.t36fh.mongodb.net/?retryWrites=true&w=majority&appName=SocialAppDB";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function connectToDb() {
@@ -28,21 +42,28 @@ async function connectToDb() {
 
 connectToDb();  // Verbindung aufbauen, wenn der Server gestartet wird
 
-
-app.post('/api/user', async (req,res)=>{
-    try{
-        const newUser = req.body;  // Der neue Post wird aus dem Request-Body gelesen
+// Benutzerregistrierung (API-Endpunkt)
+app.post('/api/user', async (req, res) => {
+    try {
+        const newUser = req.body;  // Liest die Benutzerinformationen aus dem Request-Body
         const database = client.db('SocialApp');  // Verweis auf die Datenbank
-        const userCollection = database.collection('User');  // Verweis auf die "Posts"-Collection
-        const result = await userCollection.insertOne(newUser);
+        const userCollection = database.collection('User');  // Verweis auf die Collection "User"
         
-        res.status(201).json({ ...newUser, _id: result.insertedId });  
-    }catch (error){
-        console.error('Error inserting post:', error);
-        res.status(500).json({ error: 'Error inserting post' });
-    }
+        // Überprüfen, ob der Benutzer bereits existiert
+        const existingUser = await userCollection.findOne({ email: newUser.email });
+        if (existingUser) {
+            return res.status(400).json({ error: 'User already exists' });
+        }
 
-})  
+        // Füge den neuen Benutzer in die Datenbank ein
+        const result = await userCollection.insertOne(newUser);
+        res.status(201).json({ ...newUser, _id: result.insertedId });  // Rückgabe des neuen Benutzers inkl. _id
+    } catch (error) {
+        console.error('Error inserting user:', error);
+        res.status(500).json({ error: 'Error inserting user' });
+    }
+});
+
 // Beispiel-Route zum Erstellen eines Posts in der Datenbank
 app.post('/api/posts', async (req, res) => {
     try {
@@ -59,65 +80,8 @@ app.post('/api/posts', async (req, res) => {
     }
 });
 
-
-
 // Server starten
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
-
-// const userSchema = new mongoose.Schema({
-//     fullname:{
-//         type: String,
-//         required: true,
-//         minlength: 3,
-//         maxlength: 50,
-//     },
-//     email:{
-//         type: String,
-//         required: true,
-//         minlength: 8,
-//         maxlength: 50,
-//     },
-//     hashPassword:{
-//         type: String,
-//         required: true,
-//         minlength: 5,
-//         maxlength: 50,
-//     },
-//     id:{
-//         type: String,
-//         required: true,
-//     },
-//     role:{
-//         type: String,
-//         required: true,
-//         enum: ["visitor","organisation","admin"],
-//     },
-
-// });
-
-//const User = mongoose.model("social-user", userSchema);
-
-// app.post("/api/register", async(req,res) =>{
-//     try{
-//         const{id,fullname,email,password,role}= req.body;
-//         if (!id || !fullname || !email || !password || !role) {
-//             return res.status(404).send({ message: "Please fill out all fields" });
-//           } 
-//     const existingUser = await User.findOne({email})
-//     if(existingUser)
-//     {
-//         return res.status(409).send({message: "user already exists"});
-//     }
-//     const hashPassword = await bcrypt.hash(password,10);
-//     const user=  new User({id,fullname,email,hashPassword,role});
-//     await  User.create(user)
-//     res.status(201).send({message: "User successfully created"});
-
-//     }catch(error){
-//         res.status(500).send({message: "server register failed"});
-//     }
-// })
