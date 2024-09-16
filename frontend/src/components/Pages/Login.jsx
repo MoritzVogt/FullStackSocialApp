@@ -3,8 +3,52 @@ import Headline from "../parts/headerLogin/Headline";
 import TextFieldLogin from "../parts/textFieldsLogin/TextFieldLogin";
 import SubmitButton from "../parts/buttonsLogin/SubmitButton";
 import SmallHelperText from "../parts/textLogin/SmallHelperText";
+import { useNavigate } from "react-router-dom";
+import {useRef} from "react"
+import showNotification from "../parts/notification/showNotification.js";
 
-export default function Login(){
+
+export default function Login({handleLogin}){
+    const valueEmail =useRef();
+    const valuePassword =useRef();
+    const navigator = useNavigate();
+    const handleClick = async(e) =>{
+        console.log(valuePassword.current.value)
+        const data= {
+            email: valueEmail.current.value,
+            password: valuePassword.current.value,            
+        }
+        console.log(data)
+        try{
+        const response = await fetch('http://localhost:3001/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (response.ok) {
+            
+         showNotification(`Erfolgreich eingeloggt`,"normal")
+            handleLogin(true);
+            navigator("/feed")
+        } 
+         else if (response.status === 401) {
+        showNotification(`Passwort oder Email ungültig`,"normal");
+    } 
+    else if (response.status === 404) {
+        showNotification(`bitte geben Sie ihre EmailAdresse und Passwort ein`,"normal");
+    }
+    else {
+        const errorData = await response.json();
+        console.error('Failed to register user');
+        showNotification(`${errorData.error}`,"normal");
+    }
+    } catch (error) {
+        console.error('Error while login user:', error);
+        setErrorMessage('Error while login user.');
+    }
+    }
     return(
         <Box sx={{
             width: "100vw",
@@ -31,7 +75,7 @@ export default function Login(){
                 alignItems:"center",
                 
             }}>
-                <TextFieldLogin/>
+                <TextFieldLogin valueEmail={valueEmail} valuePassword={valuePassword}/>
             </Box>
             
             <Box sx={{
@@ -57,7 +101,7 @@ export default function Login(){
             }}>
 
               {/*Submitbutton*/}
-              <SubmitButton text={"login"}></SubmitButton>
+              <SubmitButton onHandleClick={handleClick} text={"login"}></SubmitButton>
               {/*SmallHelperText*/} 
               <SmallHelperText text={"Continue to feed"}></SmallHelperText>
               <Box sx={{

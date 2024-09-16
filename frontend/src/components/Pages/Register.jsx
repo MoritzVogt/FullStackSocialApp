@@ -2,11 +2,18 @@ import { useState, useRef } from 'react';
 import { Box, TextField, Button } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { v4 as uuidv4 } from 'uuid';
+import showNotification from '../parts/notification/showNotification';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
     const [equal, setEqual] = useState(false);
     const [errorMessage, setErrorMessage] = useState(''); // Zustand für Fehlermeldungen
     const formRef = useRef();
+    const navigator = useNavigate();
+    const handleNavigate = () => {
+        navigator("/login");
+    }
+
 
     const checkPassword = () => { 
         const form = formRef.current;
@@ -33,15 +40,17 @@ export default function Register() {
                 },
                 body: JSON.stringify(formData),
             });
-
+            
             if (response.ok) {
                 const savedUser = await response.json();
                 console.log('Saved user:', savedUser);
                 setErrorMessage(''); // Keine Fehlermeldung
+                handleNavigate();
             } else if (response.status === 400) {
                 // Benutzer bereits registriert
                 const errorData = await response.json();
                 setErrorMessage(errorData.error); // Fehlermeldung setzen
+                showNotification(`${errorData.error}`,"normal");
             } else {
                 console.error('Failed to register user');
                 setErrorMessage('Failed to register user.');
@@ -110,36 +119,7 @@ export default function Register() {
                         </Box>
                     )}
                     
-                    <Box sx={{
-                        height: '100%',
-                        width: '50%',
-                        backgroundColor: 'success.main',
-                        justifySelf: 'center',
-                        alignSelf: 'center',
-                        borderRadius: '10%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontSize: '1.5rem',
-                        fontWeight: 'bold',
-                        cursor: 'pointer'
-                    }}>
-                        <p>Upload Matriculation file <UploadFileIcon/></p>
-                        <Button
-                            variant="contained"
-                            component="label"
-                        >
-                            Upload File
-                            <input
-                                type="file"
-                                accept="application/pdf"
-                                hidden
-                                name="matriculationFile"
-                            />
-                        </Button>
-                    </Box>
+ 
 
                     <Box sx={{
                         height: '100%',

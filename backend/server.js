@@ -3,6 +3,7 @@ const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
 const app = express();
+const jwt = require('jsonwebtoken');
 
 const corsOptions = {
     origin: ['http://localhost:3002', 'http://127.0.0.1:3002'],
@@ -63,6 +64,41 @@ app.post('/api/user', async (req, res) => {
         res.status(500).json({ error: 'Error inserting user' });
     }
 });
+
+
+app.post('/api/login', async (req, res) => {
+    try{
+    const newUser = req.body;  // Liest die Benutzerinformationen aus dem Request-Body
+    const database = client.db('SocialApp');  // Verweis auf die Datenbank
+    const userCollection = database.collection('User');
+    const { email, password } = req.body;
+    const datas = await database.userCollection.find()
+    console.log(datas)
+
+    //check if both variables are provided
+    if (!email || !password) {
+        res.status(401).json({ error: 'Error inserting user' });
+    }
+    //check if user exists
+    const existUser = await userCollection.findOne({ email });
+    if (!existUser) {
+      return res.status(401).send({ message: "User does not exist!" });
+    }
+    //check if password is correct
+    const existUserPw = await userCollection.findOne({ password });
+    if (!existUserPw) {
+      return res.status(401).json({ message: "Password incorrect!" });
+      
+    }
+    res.status(200).send({ message: "Login successful!" });
+}catch (error){  
+    console.error('Error inserting login:', error);
+    res.status(404).json({ error: 'Error inserting login' });
+}
+  });
+
+
+
 
 // Beispiel-Route zum Erstellen eines Posts in der Datenbank
 app.post('/api/posts', async (req, res) => {
