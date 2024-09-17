@@ -27,10 +27,13 @@ export default function Login({handleLogin}){
             },
             body: JSON.stringify(data),
         });
+        //Response als Json speichern
+        const resData = await response.json();
         if (response.ok) {
             
          showNotification(`Erfolgreich eingeloggt`,"normal")
             handleLogin(true);
+            sessionStorage.setItem('currentUser', JSON.stringify(resData)) //responseMessage in den Sessionstorage schreiben
             navigator("/feed")
         } 
          else if (response.status === 401) {

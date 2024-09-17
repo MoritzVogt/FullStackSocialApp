@@ -6,37 +6,49 @@ import '../customCss.css';
 function Feed() {
     const [posts, setPosts] = useState([]);
 
-    const currentUser = 'User123'; // Hardcodierter Nutzername
+    const currentUser = sessionStorage.getItem('currentUser') //ResponseMessage aus dem SessionStorage holen
 
     const handlePost = async (title, content) => {
-        const newPost = {
-            username: currentUser,
-            title,
-            content,
-            reactions: { like: 0, love: 0, laugh: 0 },
-            userReactions: { like: false, love: false, laugh: false },
-            timestamp: new Date(),
-        };
-
-        try {
-            // API-Request zum Speichern des Posts in der MongoDB
-            const response = await fetch('http://localhost:3001/api/posts', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newPost),
-            });
-
-            if (response.ok) {
-                const savedPost = await response.json();
-                console.log('Saved post:', savedPost); // Überprüfe, ob die _id zurückkommt
-                setPosts([savedPost, ...posts]); // Fügt den neuen Post hinzu
-            } else {
-                console.error('Failed to save the post');
+        let user = null;
+    
+        // prüfen, ob etwas im SessionStorage ist
+        if (currentUser) {
+            // JSON parsen, um auf den Nutzer zugreifen zu können
+            user = JSON.parse(currentUser);
+        }
+    
+        if (user) {
+            const newPost = {
+                username: user.currUser,
+                title,
+                content,
+                reactions: { like: 0, love: 0, laugh: 0 },
+                userReactions: { like: false, love: false, laugh: false },
+                timestamp: new Date(),
+            };
+    
+            try {
+                // API-Request zum Speichern des Posts in der MongoDB
+                const response = await fetch('http://localhost:3001/api/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newPost),
+                });
+    
+                if (response.ok) {
+                    const savedPost = await response.json();
+                    console.log('Saved post:', savedPost); // Überprüfen, ob die _id zurückkommt
+                    setPosts([savedPost, ...posts]); // Fügt den neuen Post hinzu
+                } else {
+                    console.error('Failed to save the post');
+                }
+            } catch (error) {
+                console.error('Error while saving the post:', error);
             }
-        } catch (error) {
-            console.error('Error while saving the post:', error);
+        } else {
+            console.error('No user is logged in!');
         }
     };
 

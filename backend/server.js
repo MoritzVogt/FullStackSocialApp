@@ -72,8 +72,8 @@ app.post('/api/login', async (req, res) => {
     const database = client.db('SocialApp');  // Verweis auf die Datenbank
     const userCollection = database.collection('User');
     const { email, password } = req.body;
-    const datas = await database.userCollection.find()
-    console.log(datas)
+    //const datas = await database.userCollection.find()
+    //console.log(datas)
 
     //check if both variables are provided
     if (!email || !password) {
@@ -90,7 +90,7 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ message: "Password incorrect!" });
       
     }
-    res.status(200).send({ message: "Login successful!" });
+    res.status(200).send({ message: "Login successful!",currUser: `${existUser.fullname}` });
 }catch (error){  
     console.error('Error inserting login:', error);
     res.status(404).json({ error: 'Error inserting login' });
