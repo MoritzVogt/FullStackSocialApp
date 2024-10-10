@@ -4,6 +4,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { v4 as uuidv4 } from 'uuid';
 import showNotification from '../parts/notification/showNotification';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Register() {
     const [equal, setEqual] = useState(false);
@@ -20,6 +21,8 @@ export default function Register() {
         form.password.value === form.confirmPassword.value ? setEqual(true) : setEqual(false);
     }
 
+   
+
     const registerUser = async (e) => {
         e.preventDefault();
         const form = formRef.current;
@@ -31,6 +34,19 @@ export default function Register() {
             role: 'visitor'
         }
 
+        const config={
+            url:"http://localhost:3003/api/register",
+            method: "POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            data: JSON.stringify(formData)
+
+        }
+        const resp = await axios(config);
+        console.log(resp.data.message);
+    }
+/*
         try {
             // API-Request zum Speichern des Benutzers
             const response = await fetch('http://localhost:3001/api/user', {
@@ -59,7 +75,7 @@ export default function Register() {
             console.error('Error while registering user:', error);
             setErrorMessage('Error while registering user.');
         }
-    }
+    }*/
 
     return (
         <>
