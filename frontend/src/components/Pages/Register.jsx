@@ -35,7 +35,7 @@ export default function Register() {
         }
 
         const config={
-            url:"http://localhost:3003/api/register",
+            url:"http://localhost:3001/api/register",
             method: "POST",
             headers:{
                 "Content-Type":"application/json"
@@ -44,7 +44,7 @@ export default function Register() {
 
         }
         const resp = await axios(config);
-        console.log(resp.data.message);
+        console.log(resp);
     }
 /*
         try {

@@ -71,7 +71,9 @@ app.use(express.json());
 app.post("/api/register", async (req, res) => {
   try {
     //Daten extrahieren - destructering
+    console.log(req.body);
     const { id, fullname, email, password, role } = req.body;
+ 
     if (!id || !fullname || !email || !password || !role) {
       return res.status(404).send({ message: "Please fill out all fields" });
     }
